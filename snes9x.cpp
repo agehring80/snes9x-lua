@@ -243,6 +243,7 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.DisplayPressedKeys         =  conf.GetBool("Display::DisplayInput",               false);
 	Settings.DisplayMovieFrame          =  conf.GetBool("Display::DisplayFrameCount",          false);
 	Settings.AutoDisplayMessages        =  conf.GetBool("Display::MessagesInImage",            true);
+	Settings.DisplayLagFrame            =  conf.GetBool("Display::DisplayLagFrameCount",       false);
 	Settings.InitialInfoStringTimeout   =  conf.GetInt ("Display::MessageDisplayTime",         120);
 	Settings.BilinearFilter             =  conf.GetBool("Display::BilinearFilter",             false);
 
@@ -252,7 +253,6 @@ void S9xLoadConfigFiles (char **argv, int argc)
 	Settings.TurboMode                  =  conf.GetBool("Settings::TurboMode",                 false);
 	Settings.TurboSkipFrames            =  conf.GetUInt("Settings::TurboFrameSkip",            15);
 	Settings.MovieTruncate              =  conf.GetBool("Settings::MovieTruncateAtEnd",        false);
-	Settings.MovieNotifyIgnored         =  conf.GetBool("Settings::MovieNotifyIgnored",        false);
 	Settings.WrongMovieStateProtection  =  conf.GetBool("Settings::WrongMovieStateProtection", true);
 	Settings.StretchScreenshots         =  conf.GetInt ("Settings::StretchScreenshots",        1);
 	Settings.SnapshotScreenshots        =  conf.GetBool("Settings::SnapshotScreenshots",       true);
@@ -344,6 +344,10 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 	S9xMessage(S9X_INFO, S9X_USAGE, "usage: snes9x [options] <ROM image filename>");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
+
+#ifdef HAVE_LUA
+	S9xMessage(S9X_INFO, S9X_USAGE, "-lua                            Run <ROM image basename>.lua fom snes9x path");
+#endif // HAVE_LUA
 
 	// SOUND OPTIONS
 	S9xMessage(S9X_INFO, S9X_USAGE, "-soundsync                      Synchronize sound as far as possible");
@@ -476,6 +480,12 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-help"))
 				S9xUsage();
 			else
+
+#ifdef HAVE_LUA
+			if (!strcasecmp(argv[i], "-lua"))
+				Settings.LoadLua = TRUE;
+			else
+#endif // HAVE_LUA
 
 			// SOUND OPTIONS
 

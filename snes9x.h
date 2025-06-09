@@ -254,6 +254,7 @@ struct SSettings
 	bool8	DisplayWatchedAddresses;
 	bool8	DisplayPressedKeys;
 	bool8	DisplayMovieFrame;
+	bool8	DisplayLagFrame;
 	bool	DisplayIndicators;
 	bool8	AutoDisplayMessages;
 	uint32	InitialInfoStringTimeout;
@@ -288,7 +289,6 @@ struct SSettings
 	int		Port;
 
 	bool8	MovieTruncate;
-	bool8	MovieNotifyIgnored;
 	bool8	WrongMovieStateProtection;
 	bool8	DumpStreams;
 	int		DumpStreamsMaxFrames;
@@ -314,6 +314,9 @@ struct SSettings
 	int	OneSlowClockCycle;
 	int	TwoClockCycles;
 	int	MaxSpriteTilesPerLine;
+#ifdef HAVE_LUA
+	bool8	LoadLua;
+#endif // HAVE_LUA
 };
 
 struct SSNESGameFixes

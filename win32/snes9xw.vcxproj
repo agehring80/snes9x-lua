@@ -22,32 +22,36 @@
     <ProjectName>snes9x</ProjectName>
     <ProjectGuid>{B86059D8-C9A6-46BE-8FBA-3170C54F1DFD}</ProjectGuid>
     <RootNamespace>Snes9X</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v141_xp</PlatformToolset>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v143</PlatformToolset>
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -57,18 +61,22 @@
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="s9x.props" />
+    <Import Project="lua51.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|Win32'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="s9x.props" />
+    <Import Project="lua51.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release Unicode|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="s9x.props" />
+    <Import Project="lua51.props" />
   </ImportGroup>
   <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug Unicode|x64'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="s9x.props" />
+    <Import Project="lua51.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
@@ -117,8 +125,8 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\imgui</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\imgui;$(ProjectDir)lua\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;HAVE_LUA;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -169,7 +177,7 @@
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\imgui</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;D3D_DEBUG_INFO;DIRECTDRAW_SUPPORT;USE_SLANG;HAVE_LUA;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
       <PrecompiledHeader />
@@ -224,8 +232,8 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
-      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\imgui</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\imgui;$(ProjectDir)lua\include</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;HAVE_LUA;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -280,7 +288,7 @@
       <OmitFramePointers>true</OmitFramePointers>
       <WholeProgramOptimization>true</WholeProgramOptimization>
       <AdditionalIncludeDirectories>$(ProjectDir);$(ProjectDir)..\;$(ProjectDir)..\..\;$(ProjectDir)zlib\src;$(ProjectDir)..\unzip;$(ProjectDir)libpng\src;$(ProjectDir)..\apu\bapu;$(ProjectDir)..\external\glslang;$(ProjectDir)..\external\stb;$(ProjectDir)..\external\vulkan-headers\include;$(ProjectDir)..\external\VulkanMemoryAllocator-Hpp\include;$(ProjectDir)..\external\imgui</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;ALLOW_CPU_OVERCLOCK;HAVE_LIBPNG;JMA_SUPPORT;ZLIB;UNZIP_SUPPORT;__WIN32__;NETPLAY_SUPPORT;DIRECTDRAW_SUPPORT;USE_SLANG;HAVE_LUA;%(PreprocessorDefinitions);VK_USE_PLATFORM_WIN32_KHR;VULKAN_HPP_DISPATCH_LOADER_DYNAMIC=1;VULKAN_HPP_NO_EXCEPTIONS=1;VULKAN_HPP_NO_NODISCARD_WARNINGS=1;VMA_DYNAMIC_VULKAN_FUNCTIONS=1;VMA_STATIC_VULKAN_FUNCTIONS=0;VMA_USE_STL_SHARED_MUTEX=0;IMGUI_IMPL_VULKAN_NO_PROTOTYPES</PreprocessorDefinitions>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <StructMemberAlignment>Default</StructMemberAlignment>
@@ -389,6 +397,7 @@
     <ClInclude Include="..\jma\s9x-jma.h" />
     <ClInclude Include="..\jma\winout.h" />
     <CustomBuild Include="..\language.h" />
+    <CustomBuild Include="..\lua-engine.h" />
     <CustomBuild Include="..\memmap.h" />
     <CustomBuild Include="..\messages.h" />
     <CustomBuild Include="..\missing.h" />
@@ -474,6 +483,7 @@
     <ClInclude Include="CShaderParamDlg.h" />
     <ClInclude Include="CVulkan.h" />
     <ClInclude Include="CWaveOut.h" />
+    <ClInclude Include="CWindow.h" />
     <ClInclude Include="CXAudio2.h" />
     <ClInclude Include="dxerr.h" />
     <ClInclude Include="gl_core_3_1.h" />
@@ -481,6 +491,9 @@
     <ClInclude Include="InputCustom.h" />
     <ClInclude Include="IS9xDisplayOutput.h" />
     <ClInclude Include="IS9xSoundOutput.h" />
+    <ClInclude Include="memView.h" />
+    <ClInclude Include="ramwatch.h" />
+    <ClInclude Include="ram_search.h" />
     <ClInclude Include="render.h" />
     <ClInclude Include="rsrc\resource.h" />
     <ClInclude Include="win32_display.h" />
@@ -559,6 +572,7 @@
     <ClCompile Include="..\jma\s9x-jma.cpp" />
     <ClCompile Include="..\jma\winout.cpp" />
     <ClCompile Include="..\loadzip.cpp" />
+    <ClCompile Include="..\lua-engine.cpp" />
     <ClCompile Include="..\memmap.cpp" />
     <ClCompile Include="..\movie.cpp" />
     <ClCompile Include="..\msu1.cpp" />
@@ -645,12 +659,17 @@
     <ClCompile Include="CShaderParamDlg.cpp" />
     <ClCompile Include="CVulkan.cpp" />
     <ClCompile Include="CWaveOut.cpp" />
+    <ClCompile Include="CWindow.cpp" />
     <ClCompile Include="CXAudio2.cpp" />
     <ClCompile Include="DumpAtEnd.cpp" />
     <ClCompile Include="dxerr.cpp" />
     <ClCompile Include="gl_core_3_1.c" />
     <ClCompile Include="image_functions.cpp" />
     <ClCompile Include="InputCustom.cpp" />
+    <ClCompile Include="luaconsole.cpp" />
+    <ClCompile Include="memView.cpp" />
+    <ClCompile Include="ramwatch.cpp" />
+    <ClCompile Include="ram_search.cpp" />
     <ClCompile Include="render.cpp" />
     <ClCompile Include="wconfig.cpp" />
     <ClCompile Include="win32.cpp" />

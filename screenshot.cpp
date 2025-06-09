@@ -17,7 +17,7 @@
 #include "screenshot.h"
 
 
-bool8 S9xDoScreenshot (int width, int height)
+bool8 S9xDoScreenshot(int width, int height, const std::string &filename)
 {
 	Settings.TakeScreenshot = FALSE;
 
@@ -27,28 +27,35 @@ bool8 S9xDoScreenshot (int width, int height)
 	png_infop	info_ptr;
 	png_color_8	sig_bit;
 	int			imgwidth, imgheight;
+	std::string fname;
 
-	std::tm *current_time;
-	std::time_t current_timet = time(nullptr);
-	current_time = localtime(&current_timet);
+    if (filename.empty())
+    {
+        std::tm *current_time;
+        std::time_t current_timet = time(nullptr);
+        current_time = localtime(&current_timet);
 
-	auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
-	std::stringstream ss;
-	ss << screenshot_dir
-	   << S9xBasenameNoExt(Memory.ROMFilename) << "-"
-	   << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
-	std::string fname = ss.str() + ".png";
+        auto screenshot_dir = S9xGetDirectory(SCREENSHOT_DIR);
+        std::stringstream ss;
+        ss << screenshot_dir
+           << S9xBasenameNoExt(Memory.ROMFilename) << "-"
+           << std::put_time(current_time, "%Y-%m-%d-%H-%M-%S");
+        fname = ss.str() + ".png";
 
-	for (int i = 0; i < 1000; i++)
-	{
-		FILE *fp = fopen(fname.c_str(), "r");
+        for (int i = 0; i < 1000; i++)
+        {
+            FILE *fp = fopen(fname.c_str(), "r");
+            if (!fp)
+                break;
 
-		if (!fp)
-			break;
-
-		fclose(fp);
-		fname = ss.str() + "-" + std::to_string(i) + ".png";
-	}
+            fclose(fp);
+            fname = ss.str() + "-" + std::to_string(i) + ".png";
+        }
+    }
+    else
+    {
+        fname = filename;
+    }
 
 	fp = fopen(fname.c_str(), "wb");
 	if (!fp)

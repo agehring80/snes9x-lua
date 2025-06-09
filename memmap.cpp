@@ -2424,8 +2424,6 @@ void CMemory::InitROM (void)
 	Timings.APUSpeedup = 0;
 	S9xAPUTimingSetSpeedup(Timings.APUSpeedup);
 
-	IPPU.TotalEmulatedFrames = 0;
-
 	//// Hack games
 
 	ApplyROMFixes();

@@ -21,6 +21,10 @@
 #include "imgui_impl_dx9.h"
 #include "snes9x_imgui.h"
 
+#ifdef HAVE_LUA
+#include "../lua-engine.h"
+#endif
+
 #ifndef max
 #define max(a, b) (((a) > (b)) ? (a) : (b))
 #endif
@@ -101,7 +105,8 @@ bool CDirect3D::Initialize(HWND hWnd)
 	HRESULT hr = pD3D->CreateDevice(D3DADAPTER_DEFAULT,
                       D3DDEVTYPE_HAL,
                       hWnd,
-                      D3DCREATE_MIXED_VERTEXPROCESSING,
+                      D3DCREATE_MIXED_VERTEXPROCESSING
+                        | D3DCREATE_FPU_PRESERVE, // for lua
 					  &dPresentParams,
                       &pDevice);
 	if(FAILED(hr)) {
@@ -309,7 +314,9 @@ void CDirect3D::Render(SSurface Src)
 		Dst.Pitch = lr.Pitch;
 
 		RenderMethod (Src, Dst, &dstRect);
-
+#ifdef HAVE_LUA
+			DrawLuaGuiToScreen(Dst.Surface, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 16, Dst.Pitch);
+#endif
 		drawSurface->UnlockRect(0);
 	}
 

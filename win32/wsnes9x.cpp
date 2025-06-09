@@ -47,8 +47,13 @@
 #include "../controls.h"
 #include "../conffile.h"
 #include "../statemanager.h"
+#include "../lua-engine.h"
 #include "AVIOutput.h"
 #include "InputCustom.h"
+#include "CWindow.h"
+#include "memView.h"
+#include "ram_search.h"
+#include "ramwatch.h"
 #include <vector>
 #include <string>
 
@@ -117,6 +122,9 @@ void S9xDetectJoypads();
 
 void S9xWinScanJoypads();
 
+extern HWND RamSearchHWnd;
+extern LRESULT CALLBACK RamSearchProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
 #define NOTKNOWN "Unknown Company "
 #define HEADER_SIZE 512
 #define INFO_LEN (0xFF - 0xC0)
@@ -157,6 +165,15 @@ static bool ExtensionIsValid(const TCHAR *filename);
 extern FILE *trace_fs;
 extern SCheatData Cheat;
 extern bool8 do_frame_adjust;
+#ifdef HAVE_LUA
+LRESULT CALLBACK LuaScriptProc(HWND, UINT, WPARAM, LPARAM);
+std::vector<HWND> LuaScriptHWnds;
+std::vector<HWND> hiddenLuaWindows;
+#endif // HAVE_LUA
+
+bool mouseInsideWindow = false;
+bool cursorHidden = false;
+
 
 TCHAR multiRomA[MAX_PATH] = { 0 }; // lazy, should put in sGUI and add init to {0} somewhere
 TCHAR multiRomB[MAX_PATH] = { 0 };
@@ -986,14 +1003,7 @@ int HandleKeyMessage(WPARAM wParam, LPARAM lParam)
 		if(wParam == CustomKeys.FrameCount.key
 		&& modifiers == CustomKeys.FrameCount.modifiers)
 		{
-			if (S9xMovieActive()
-#ifdef NETPLAY_SUPPORT
-			|| Settings.NetPlay
-#endif
-			)
-				S9xMovieToggleFrameDisplay ();
-			else
-				S9xMessage(S9X_INFO, S9X_MOVIE_INFO, MOVIE_ERR_NOFRAMETOGGLE);
+			S9xMovieToggleFrameDisplay ();
 			hitHotKey = true;
 		}
 		if(wParam == CustomKeys.Pause.key
@@ -1546,6 +1556,100 @@ bool WinMoviePlay(LPCTSTR filename)
 	return true;
 }
 
+void ClientToSNESScreen(LPPOINT lpPoint, bool clip)
+{
+	const POINT client = *lpPoint;
+	RECT size;
+	GetClientRect(GUI.hWnd, &size);
+	if (!(GUI.Scale) && !(GUI.Stretch))
+	{
+		int startx, starty;
+
+		//		int theight;
+		//		(IPPU.RenderedScreenHeight> 256)? theight= SNES_HEIGHT_EXTENDED<<1: theight = SNES_HEIGHT_EXTENDED;
+		int theight = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+		if (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) theight <<= 1;
+
+		startx = size.right - IPPU.RenderedScreenWidth;
+		startx /= 2;
+		starty = size.bottom - theight;
+		starty /= 2;
+
+		lpPoint->x = client.x - startx;
+		if (clip)
+			if (client.x < startx)
+				lpPoint->x = 0;
+			else if (client.x > (startx + IPPU.RenderedScreenWidth))
+				lpPoint->x = IPPU.RenderedScreenWidth;
+
+		lpPoint->y = client.y - starty;
+		if (clip)
+			if (client.y < starty)
+				lpPoint->y = 0;
+			else if (client.y > (starty + theight))
+				lpPoint->y = theight;
+	}
+	else if (!(GUI.Stretch))
+	{
+		int startx, starty, sizex, sizey;
+
+		if (IPPU.RenderedScreenWidth > 256)
+			sizex = IPPU.RenderedScreenWidth;
+		else sizex = IPPU.RenderedScreenWidth * 2;
+
+		int theight = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+		sizey = (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) ? theight : (theight << 1);
+
+		startx = size.right - sizex;
+		startx /= 2;
+		starty = size.bottom - sizey;
+		starty /= 2;
+		lpPoint->x = client.x - startx;
+		if (clip)
+			if (client.x < startx)
+				lpPoint->x = 0;
+			else if (client.x > (startx + sizex))
+				lpPoint->x = sizex;
+
+		lpPoint->y = client.y - starty;
+		if (clip)
+			if (client.y < starty)
+				lpPoint->y = 0;
+			else if (client.y > (starty + sizey))
+				lpPoint->y = sizey;
+
+		lpPoint->x = (lpPoint->x * IPPU.RenderedScreenWidth) / sizex;
+		lpPoint->y = (lpPoint->y * IPPU.RenderedScreenHeight) / sizey;
+	}
+	else
+	{
+		int sizex = IPPU.RenderedScreenWidth;
+		int sizey = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
+		sizey = (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) ? (sizey << 1) : sizey;
+		int width = size.right, height = size.bottom, xdiff = 0, ydiff = 0;
+		if (GUI.AspectRatio)
+		{
+			if (width > sizex * height / sizey)
+			{
+				xdiff = width - sizex * height / sizey;
+				width -= xdiff;
+				xdiff >>= 1;
+			}
+			else if (height > sizey * width / sizex)
+			{
+				ydiff = height - sizey * width / sizex;
+				height -= ydiff;
+				ydiff >>= 1;
+			}
+		}
+		if (width > 0 && height > 0)
+		{
+			lpPoint->x = (client.x - xdiff) * sizex / width;
+			lpPoint->y = (client.y - ydiff) * sizey / height;
+		}
+	}
+}
+
 static bool startingMovie = false;
 
 HWND cheatSearchHWND = NULL;
@@ -1654,6 +1758,27 @@ LRESULT CALLBACK WinProc(
 			else if (lstrcmpi(ext, TEXT(".smv")) == 0) {
 				WinMoviePlay(droppedFile);
 			}
+#ifdef HAVE_LUA
+			else if (lstrcmpi(ext, TEXT(".lua")) == 0) {
+				if(LuaScriptHWnds.size() < 16)
+				{
+					TCHAR temp [1024];
+					lstrcpy(temp, droppedFile);
+					HWND IsScriptFileOpen(const TCHAR* Path);
+					if(!IsScriptFileOpen(temp))
+					{
+						HWND hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_LUA), hWnd, (DLGPROC) LuaScriptProc);
+						SendDlgItemMessage(hDlg,IDC_EDIT_LUAPATH,WM_SETTEXT,0,(LPARAM)temp);
+					}
+				}
+			}
+#endif
+			else if (lstrcmpi(ext, TEXT(".wch")) == 0) {
+				if (!Settings.StopEmulation) {
+					SendMenuCommand(ID_RAM_WATCH);
+					Load_Watches(true, droppedFile);
+				}
+			}
 			else {
 				S9xMessage(S9X_ERROR, S9X_ROM_INFO, "Unknown file extension.");
 			}
@@ -1677,6 +1802,32 @@ LRESULT CALLBACK WinProc(
 		}
 		switch (cmd_id)
 		{
+#ifdef HAVE_LUA
+		case IDC_NEW_LUA_SCRIPT: 
+			{
+				if(LuaScriptHWnds.size() < 16)
+				{
+					CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_LUA), GUI.hWnd, (DLGPROC) LuaScriptProc);
+				}
+			}
+			break;
+		case IDC_CLOSE_LUA_SCRIPTS:
+			{
+				for(int i=(int)LuaScriptHWnds.size()-1; i>=0; i--)
+					SendMessage(LuaScriptHWnds[i], WM_CLOSE, 0,0);
+			}
+			break;
+		case IDC_UNHIDE_LUA_SCRIPTS:
+		{
+			for (HWND hwnd : hiddenLuaWindows)
+			{
+				if (IsWindow(hwnd))
+					ShowWindow(hwnd, SW_SHOW);
+			}
+			hiddenLuaWindows.clear();
+		}
+		break;
+#endif
 		case ID_FILE_AVI_RECORDING:
 			if (!GUI.AVIOut)
 				PostMessage(GUI.hWnd, WM_COMMAND, ID_FILE_WRITE_AVI, NULL);
@@ -2293,6 +2444,29 @@ LRESULT CALLBACK WinProc(
 		case ID_CHEAT_SEARCH:
             WinShowCheatSearchDialog();
 			break;
+		case ID_RAM_SEARCH:
+			if(!RamSearchHWnd)
+			{
+				reset_address_info();
+				RamSearchHWnd = CreateDialog(GUI.hInstance, MAKEINTRESOURCE(IDD_RAMSEARCH), hWnd, (DLGPROC) RamSearchProc);
+			}
+			else
+				SetForegroundWindow(RamSearchHWnd);
+			break;
+		case ID_RAM_WATCH:
+			if(!RamWatchHWnd)
+			{
+				RamWatchHWnd = CreateDialog(GUI.hInstance, MAKEINTRESOURCE(IDD_RAMWATCH), hWnd, (DLGPROC) RamWatchProc);
+			}
+			else
+				SetForegroundWindow(RamWatchHWnd);
+			break;
+		case IDM_MEMORY:
+			if (!RegWndClass(TEXT("MemView_ViewBox"), MemView_ViewBoxProc, 0, sizeof(CMemView*)))
+				return 0;
+
+			OpenToolWindow(new CMemView());
+			return 0;
 		case ID_CHEAT_APPLY:
 			Settings.ApplyCheats = !Settings.ApplyCheats;
 			if (!Settings.ApplyCheats){
@@ -2479,10 +2653,24 @@ LRESULT CALLBACK WinProc(
 		}
 		break;
 	case WM_MOUSEMOVE:
-		if(Settings.StopEmulation)
+		if (Settings.StopEmulation)
 		{
-			SetCursor (GUI.Arrow);
-			break;
+			SetCursor(GUI.Arrow);
+			return 0;
+		}
+		if (!mouseInsideWindow)
+		{
+			TRACKMOUSEEVENT tme;
+			tme.cbSize = sizeof(TRACKMOUSEEVENT);
+			tme.dwFlags = TME_LEAVE;
+			tme.hwndTrack = hWnd;
+			TrackMouseEvent(&tme);
+			mouseInsideWindow = true;
+			if (!cursorHidden)
+			{
+				ShowCursor(FALSE);
+				cursorHidden = true;
+			}
 		}
 		// Lo-word of lparam is xpos, hi-word is ypos
 //		if (!GUI.IgnoreNextMouseMove)
@@ -2500,92 +2688,12 @@ LRESULT CALLBACK WinProc(
 			}
 			else if (GUI.ControllerOption==SNES_SUPERSCOPE || GUI.ControllerOption==SNES_JUSTIFIER || GUI.ControllerOption==SNES_JUSTIFIER_2 || GUI.ControllerOption==SNES_MACSRIFLE)
 			{
-				RECT size;
-				GetClientRect (GUI.hWnd, &size);
-				if(!(GUI.Scale)&&!(GUI.Stretch))
-				{
-					int x,y, startx, starty;
-					x=GET_X_LPARAM(lParam);
-					y=GET_Y_LPARAM(lParam);
-
-//					int theight;
-//					(IPPU.RenderedScreenHeight> 256)? theight= SNES_HEIGHT_EXTENDED<<1: theight = SNES_HEIGHT_EXTENDED;
-					int theight = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-					if(IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) theight <<= 1;
-
-					startx= size.right-IPPU.RenderedScreenWidth;
-					startx/=2;
-					starty= size.bottom-theight;
-					starty/=2;
-
-					if(x<startx)
-						GUI.MouseX=0;
-					else if(x>(startx+IPPU.RenderedScreenWidth))
-						GUI.MouseX=IPPU.RenderedScreenWidth;
-					else GUI.MouseX=x-startx;
-
-					if(y<starty)
-						GUI.MouseY=0;
-					else if(y>(starty+theight))
-						GUI.MouseY=theight;
-					else GUI.MouseY=y-starty;
-				}
-				else if(!(GUI.Stretch))
-				{
-					int x,y, startx, starty, sizex, sizey;
-					x=GET_X_LPARAM(lParam);
-					y=GET_Y_LPARAM(lParam);
-
-					if (IPPU.RenderedScreenWidth>256)
-						sizex=IPPU.RenderedScreenWidth;
-					else sizex=IPPU.RenderedScreenWidth*2;
-
-					int theight = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-					sizey = (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) ? theight : (theight << 1);
-
-					startx= size.right-sizex;
-					startx/=2;
-					starty= size.bottom-sizey;
-					starty/=2;
-					if(x<startx)
-						GUI.MouseX=0;
-					else if(x>(startx+sizex))
-						GUI.MouseX=sizex;
-					else GUI.MouseX=x-startx;
-
-					if(y<starty)
-						GUI.MouseY=0;
-					else if(y>(starty+sizey))
-						GUI.MouseY=sizey;
-					else GUI.MouseY=y-starty;
-
-					GUI.MouseX=(GUI.MouseX*IPPU.RenderedScreenWidth)/sizex;
-					GUI.MouseY=(GUI.MouseY*IPPU.RenderedScreenHeight)/sizey;
-				}
-				else
-				{
-					int sizex = IPPU.RenderedScreenWidth;
-					int sizey = Settings.ShowOverscan ? SNES_HEIGHT_EXTENDED : SNES_HEIGHT;
-					sizey = (IPPU.RenderedScreenHeight > SNES_HEIGHT_EXTENDED) ? (sizey << 1) : sizey;
-					int width = size.right, height = size.bottom, xdiff = 0, ydiff = 0;
-					if(GUI.AspectRatio)
-					{
-						if(width > sizex*height/sizey)
-						{
-							xdiff = width - sizex*height/sizey;
-							width -= xdiff;
-							xdiff >>= 1;
-						}
-						else if(height > sizey*width/sizex)
-						{
-							ydiff = height - sizey*width/sizex;
-							height -= ydiff;
-							ydiff >>= 1;
-						}
-					}
-					GUI.MouseX=(GET_X_LPARAM(lParam)-xdiff)*sizex/width;
-					GUI.MouseY=(GET_Y_LPARAM(lParam)-ydiff)*sizey/height;
-				}
+				POINT point;
+				point.x = GET_X_LPARAM(lParam);
+				point.y = GET_Y_LPARAM(lParam);
+				ClientToSNESScreen(&point, true);
+				GUI.MouseX = point.x;
+				GUI.MouseY = point.y;
 			}
 			else
 			{
@@ -2601,6 +2709,17 @@ LRESULT CALLBACK WinProc(
 		else
 			GUI.IgnoreNextMouseMove = false;
 		return 0;
+		break;
+	case WM_MOUSELEAVE:
+	{
+		if (cursorHidden)
+		{
+			ShowCursor(TRUE);
+			cursorHidden = false;
+		}
+		mouseInsideWindow = false;
+		return 0;
+	}	break;
 	case WM_LBUTTONDOWN:
 		S9xMouseOn ();
 		GUI.MouseButtons |= 1;
@@ -2890,6 +3009,9 @@ static void EnsureInputDisplayUpdated()
 		WinRefreshDisplay();
 }
 
+DWORD guiUpdateFrequency = 50;
+DWORD lastGUIUpdateTime = 0;
+
 // for "frame advance skips non-input frames" feature
 void S9xOnSNESPadRead()
 {
@@ -2923,6 +3045,18 @@ void S9xOnSNESPadRead()
 				{
 					TranslateMessage (&msg);
 					DispatchMessage (&msg);
+				}
+
+				if (!Settings.StopEmulation && (Settings.Paused || Settings.ForcedPause))
+				{
+					DWORD lastTime = timeGetTime();
+					if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency)
+					{
+						UpdateToolWindows();
+						S9xUpdateFrameCounter(-1);
+						InvalidateRect(GUI.hWnd, NULL, FALSE);
+						lastGUIUpdateTime = lastTime;
+					}
 				}
 			}
 
@@ -3328,6 +3462,7 @@ int WINAPI WinMain(
 	ConfigFile::SetTimeSort(false);
 
     const TCHAR *rom_filename = WinParseCommandLineAndLoadConfigFile (GetCommandLine());
+
     WinSaveConfigFile ();
 	WinLockConfigFile ();
 
@@ -3341,6 +3476,41 @@ int WINAPI WinMain(
 	{
 		SetMenu (GUI.hWnd, NULL);
 	}
+#ifdef HAVE_LUA
+	if (Settings.LoadLua)
+	{
+		if (LuaScriptHWnds.size() < 16)
+		{
+			TCHAR fname[_MAX_FNAME];
+			TCHAR lua_filename[_MAX_PATH];
+			TCHAR full_lua_path[_MAX_PATH];
+			TCHAR exe_path[_MAX_PATH], exe_drive[_MAX_DRIVE], exe_dir[_MAX_DIR];
+			bool luafile_exists = false;
+			// Get base name from ROM
+			_tsplitpath(rom_filename, nullptr, nullptr, fname, nullptr);
+			_stprintf(lua_filename, _T("%s.lua"), fname);
+			// 1. Try executable directory
+			GetModuleFileName(nullptr, exe_path, _MAX_PATH);
+			_tsplitpath(exe_path, exe_drive, exe_dir, nullptr, nullptr);
+			_stprintf(full_lua_path, _T("%s%s%s"), exe_drive, exe_dir, lua_filename);
+			if (_taccess(full_lua_path, 0) == 0) {
+				luafile_exists = true;
+			}
+			else {
+				// 2. Try current directory
+				if (_tfullpath(full_lua_path, lua_filename, _MAX_PATH) && _taccess(full_lua_path, 0) == 0) {
+					luafile_exists = true;
+				}
+			}
+			if (luafile_exists) {
+				HWND hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_LUA), GUI.hWnd, (DLGPROC)LuaScriptProc);
+				SendDlgItemMessage(hDlg, IDC_EDIT_LUAPATH, WM_SETTEXT, 0, (LPARAM)full_lua_path);
+				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_LUARUN, 0);
+				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_LUAHIDE, 0);
+			}
+		}
+	}
+#endif // HAVE_LUA
 
     DEV_BROADCAST_DEVICEINTERFACE notificationFilter;
     ZeroMemory(&notificationFilter, sizeof(notificationFilter));
@@ -3426,12 +3596,32 @@ int WINAPI WinMain(
         {
             if (!GetMessage (&msg, NULL, 0, 0))
                 goto loop_exit; // got WM_QUIT
+			
+			// do not process non-modal dialog messages
+			if (RamSearchHWnd && IsDialogMessage(RamSearchHWnd, &msg))
+				continue;
+
+			if (RamWatchHWnd && IsDialogMessage(RamWatchHWnd, &msg)) {
+				if(msg.message == WM_KEYDOWN) // send keydown messages to the dialog (for accelerators, and also needed for the Alt key to work)
+					SendMessage(RamWatchHWnd, msg.message, msg.wParam, msg.lParam);
+				continue;
+			}
 
             if (!TranslateAccelerator (GUI.hWnd, GUI.Accelerators, &msg))
             {
                 TranslateMessage (&msg);
                 DispatchMessage (&msg);
             }
+			if (!Settings.StopEmulation && (Settings.Paused || Settings.ForcedPause))
+			{
+				DWORD lastTime = timeGetTime();
+				if (lastTime - lastGUIUpdateTime >= guiUpdateFrequency) {
+					UpdateToolWindows();
+					S9xUpdateFrameCounter(-1);
+					InvalidateRect(GUI.hWnd, NULL, FALSE);
+					lastGUIUpdateTime = lastTime;
+				}
+			}
 
 			S9xSetSoundMute(GUI.Mute || Settings.ForcedPause || (Settings.Paused && (!Settings.FrameAdvance || GUI.FAMute)));
         }
@@ -3504,6 +3694,7 @@ int WINAPI WinMain(
 			}
 
 			S9xMainLoop();
+			UpdateToolWindows(true);
 			GUI.FrameCount++;
 			if (GUI.CursorTimer)
 			{
@@ -3526,6 +3717,7 @@ int WINAPI WinMain(
 
 loop_exit:
 
+	CloseAllToolWindows();
 	Settings.StopEmulation = TRUE;
 
 	// stop sound playback
@@ -3569,6 +3761,12 @@ loop_exit:
 	DeinitS9x();
 
 	return msg.wParam;
+}
+
+void UpdateToolWindows(bool frameAdvance)
+{
+	Update_RAM_Search(frameAdvance);	//Update_RAM_Watch() is also called
+	RefreshAllToolWindows();
 }
 
 void FreezeUnfreezeDialog(bool8 freeze)
@@ -3773,6 +3971,15 @@ static void CheckMenuStates ()
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_ENTER, FALSE, &mii);
 	SetMenuItemInfo (GUI.hMenu, IDM_ROM_INFO, FALSE, &mii);
 
+	mii.fState = RamWatchHWnd ? MFS_CHECKED : MFS_UNCHECKED;
+	if (Settings.StopEmulation || GUI.FullScreen)
+		mii.fState |= MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, ID_RAM_WATCH, FALSE, &mii);
+	mii.fState = RamSearchHWnd ? MFS_CHECKED : MFS_UNCHECKED;
+	if (Settings.StopEmulation || GUI.FullScreen)
+		mii.fState |= MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, ID_RAM_SEARCH, FALSE, &mii);
+
 	if (GUI.FullScreen)
         mii.fState |= MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_CHEAT_SEARCH, FALSE, &mii);
@@ -3892,7 +4099,18 @@ static void CheckMenuStates ()
 
 	mii.fState = (S9xMovieActive () && !Settings.StopEmulation) ? MFS_ENABLED : MFS_DISABLED;
     SetMenuItemInfo (GUI.hMenu, ID_FILE_MOVIE_STOP, FALSE, &mii);
-
+#ifdef HAVE_LUA
+	mii.fState = 0;
+	SetMenuItemInfo (GUI.hMenu, IDC_NEW_LUA_SCRIPT, FALSE, &mii);
+	mii.fState = (LuaScriptHWnds.size() > 0 ? 0 : MFS_DISABLED);
+	SetMenuItemInfo (GUI.hMenu, IDC_CLOSE_LUA_SCRIPTS, FALSE, &mii);
+	mii.fState = (hiddenLuaWindows.size() > 0 ? 0 : MFS_DISABLED);
+	SetMenuItemInfo(GUI.hMenu, IDC_UNHIDE_LUA_SCRIPTS, FALSE, &mii);
+#else
+	mii.fState = MFS_DISABLED;
+	SetMenuItemInfo (GUI.hMenu, IDC_NEW_LUA_SCRIPT, FALSE, &mii);
+	SetMenuItemInfo (GUI.hMenu, IDC_CLOSE_LUA_SCRIPTS, FALSE, &mii);
+#endif
 	mii.fState = (GUI.SoundChannelEnable & (1 << 0)) ? MFS_CHECKED : MFS_UNCHECKED;
     SetMenuItemInfo (GUI.hMenu, ID_CHANNELS_CHANNEL1, FALSE, &mii);
 	mii.fState = (GUI.SoundChannelEnable & (1 << 1)) ? MFS_CHECKED : MFS_UNCHECKED;
@@ -9229,19 +9447,6 @@ static inline int CheatCount(int byteSub)
 	}
 	return b;
 }
-
-
-struct ICheat
-{
-    uint32  address;
-    uint32  new_val;
-    uint32  saved_val;
-	int		size;
-    bool8   enabled;
-    bool8   saved;
-    char    name [22];
-	int format;
-};
 
 bool TestRange(int val_type, S9xCheatDataSize bytes,  uint32 value)
 {

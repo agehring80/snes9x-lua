@@ -606,6 +606,133 @@ BEGIN
     PUSHBUTTON      "Set Defaults",IDC_SET_DEFAULTS,6,100,48,14
 END
 
+IDD_RAMSEARCH DIALOGEX 0, 0, 287, 292
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION " RAM Search"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_RAMLIST,"SysListView32",LVS_REPORT | LVS_SHOWSELALWAYS | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,9,9,214,151,WS_EX_CLIENTEDGE
+    PUSHBUTTON      "&Search",IDC_C_SEARCH,226,9,52,16
+    PUSHBUTTON      "&Add Cheat",IDC_C_ADDCHEAT,226,145,52,16,WS_DISABLED
+    PUSHBUTTON      "&Watch",IDC_C_WATCH,226,127,52,16
+    PUSHBUTTON      "&Reset",IDC_C_RESET,226,27,52,16
+    PUSHBUTTON      "&Eliminate",IDC_C_ELIMINATE,226,109,52,16
+    GROUPBOX        "Comparison Operator",IDC_STATIC,10,166,102,118,0,WS_EX_TRANSPARENT
+    CONTROL         "Less Than",IDC_LESSTHAN,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,14,178,95,11
+    CONTROL         "Greater Than",IDC_MORETHAN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,191,95,11
+    CONTROL         "Less Than or Equal To",IDC_NOMORETHAN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,204,95,11
+    CONTROL         "Greater Than or Equal To",IDC_NOLESSTHAN,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,217,95,11
+    CONTROL         "Equal To",IDC_EQUALTO,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,230,95,11
+    CONTROL         "Not Equal To",IDC_DIFFERENTFROM,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,243,95,11
+    CONTROL         "Different By:",IDC_DIFFERENTBY,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,256,52,11
+    CONTROL         "Modulo",IDC_MODULO,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,14,269,35,11
+    EDITTEXT        IDC_EDIT_DIFFBY,69,255,38,12,ES_UPPERCASE | ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_MODBY,51,267,38,12,ES_UPPERCASE | ES_AUTOHSCROLL | WS_DISABLED
+    GROUPBOX        "Compare To / By",IDC_STATIC,118,166,153,58,0,WS_EX_TRANSPARENT
+    CONTROL         "Previous Value",IDC_PREVIOUSVALUE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,121,176,67,10
+    CONTROL         "Specific Value:",IDC_SPECIFICVALUE,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,121,187,67,10
+    CONTROL         "Specific Address:",IDC_SPECIFICADDRESS,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,121,198,67,10
+    CONTROL         "Number of Changes:",IDC_NUMBEROFCHANGES,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,121,209,76,10
+    EDITTEXT        IDC_EDIT_COMPAREVALUE,203,183,63,12,ES_UPPERCASE | ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_COMPAREADDRESS,203,195,63,12,ES_UPPERCASE | ES_AUTOHSCROLL | WS_DISABLED
+    EDITTEXT        IDC_EDIT_COMPARECHANGES,203,207,63,12,ES_UPPERCASE | ES_AUTOHSCROLL | WS_DISABLED
+    GROUPBOX        "Data Type / Display",IDC_STATIC,196,227,75,44,0,WS_EX_TRANSPARENT
+    CONTROL         "Signed",IDC_SIGNED,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,200,237,67,9
+    CONTROL         "Unsigned",IDC_UNSIGNED,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,200,248,67,9
+    CONTROL         "Hexadecimal",IDC_HEX,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,200,259,67,9
+    CONTROL         "Autosearch",IDC_C_AUTOSEARCH,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,200,273,52,11
+    GROUPBOX        "Data Size",IDC_STATIC,117,227,73,57,0,WS_EX_TRANSPARENT
+    CONTROL         "1 byte",IDC_1_BYTE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,121,237,61,11
+    CONTROL         "2 bytes",IDC_2_BYTES,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,121,248,61,11
+    CONTROL         "4 bytes",IDC_4_BYTES,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,121,259,61,11
+    CONTROL         "Check Misaligned",IDC_MISALIGN,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,121,272,65,8
+    PUSHBUTTON      "&Clear Change Counts",IDC_C_RESET_CHANGES,226,46,52,20,BS_MULTILINE
+    PUSHBUTTON      "&Undo",IDC_C_UNDO,226,69,52,16,WS_DISABLED
+    LTEXT           "Is",IDC_STATIC,92,270,12,8
+END
+
+IDD_RAMWATCH DIALOGEX 0, 0, 269, 274
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION " RAM Watch"
+MENU RAMWATCH_MENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CONTROL         "",IDC_WATCHLIST,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_SHOWSELALWAYS | LVS_OWNERDATA | WS_BORDER | WS_TABSTOP,9,9,210,255,WS_EX_CLIENTEDGE
+    PUSHBUTTON      "Edit",IDC_C_WATCH_EDIT,226,66,34,14
+    PUSHBUTTON      "Remove",IDC_C_WATCH_REMOVE,226,83,34,14
+    PUSHBUTTON      "New",IDC_C_WATCH,226,100,34,14
+    PUSHBUTTON      "Duplicate",IDC_C_WATCH_DUPLICATE,226,117,34,14
+    PUSHBUTTON      "Add Cheat",IDC_C_ADDCHEAT,222,140,42,16,WS_DISABLED
+    GROUPBOX        "Watches",IDC_WATCHES_GROUP,222,11,42,125,0,WS_EX_TRANSPARENT
+    CONTROL         "",ID_WATCHES_UPDOWN,"msctls_updown32",WS_TABSTOP,232,23,19,36
+END
+
+IDD_EDITWATCH DIALOGEX 0, 0, 181, 95
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION " Edit Watch"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    CTEXT           "Address:",IDC_SPECIFICADDRESS,18,12,35,10
+    EDITTEXT        IDC_EDIT_COMPAREADDRESS,55,10,65,12,ES_UPPERCASE | ES_AUTOHSCROLL
+    CTEXT           "Notes:",IDC_PROMPT_TEXT,18,24,45,10
+    EDITTEXT        IDC_PROMPT_EDIT,55,22,65,12,ES_AUTOHSCROLL
+    GROUPBOX        "Data Type",IDC_STATIC,14,37,75,42,0,WS_EX_TRANSPARENT
+    CONTROL         "&Signed",IDC_SIGNED,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,18,47,67,9
+    CONTROL         "&Unsigned",IDC_UNSIGNED,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,18,57,67,9
+    CONTROL         "&Hexadecimal",IDC_HEX,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,18,67,67,9
+    GROUPBOX        "Data Size",IDC_STATIC,94,37,73,42,0,WS_EX_TRANSPARENT
+    CONTROL         "&1 byte",IDC_1_BYTE,"Button",BS_AUTORADIOBUTTON | WS_GROUP | WS_TABSTOP,98,47,61,11
+    CONTROL         "&2 bytes",IDC_2_BYTES,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,98,57,61,11
+    CONTROL         "&4 bytes",IDC_4_BYTES,"Button",BS_AUTORADIOBUTTON | WS_TABSTOP,98,67,61,11
+    DEFPUSHBUTTON   "&OK",IDOK,66,80,50,14
+    PUSHBUTTON      "&Cancel",IDCANCEL,120,80,50,14
+END
+
+IDD_PROMPT DIALOG 0, 0, 186, 68
+STYLE DS_SETFONT | DS_MODALFRAME | DS_3DLOOK | DS_FIXEDSYS | DS_CENTER | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Input Prompt"
+FONT 8, "Ms Shell Dlg 2"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,100,43,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,37,42,50,14
+    EDITTEXT        IDC_PROMPT_EDIT,10,15,167,14,ES_AUTOHSCROLL
+END
+
+IDD_MEM_VIEW DIALOGEX 0, 0, 444, 283
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Close",IDCANCEL,378,262,60,15
+    GROUPBOX        "View mode",IDC_STATIC,66,6,72,30
+    GROUPBOX        "Address",IDC_STATIC,144,6,108,30
+    PUSHBUTTON      "Go",IDC_GO,222,18,25,14
+    PUSHBUTTON      "Text dump",IDC_TEXTDUMP,264,18,49,14
+    CONTROL         "1",IDC_MEMVIEWBOX,"MemView_ViewBox",WS_VSCROLL | WS_TABSTOP,6,42,432,204
+    EDITTEXT        IDC_ADDRESS,150,18,72,14,ES_AUTOHSCROLL,WS_EX_TRANSPARENT
+    PUSHBUTTON      "Raw dump",IDC_RAWDUMP,317,18,48,14
+    GROUPBOX        "Dump view",IDC_STATIC,258,6,180,30
+    GROUPBOX        "Region",IDC_STATIC,6,6,54,30
+    COMBOBOX        IDC_REGION,12,18,42,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_VIEWMODE,72,18,60,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Dump All",IDC_DUMPALL,369,18,48,14
+END
+
+IDD_LUA DIALOGEX 0, 0, 270, 150
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_VISIBLE | WS_CLIPCHILDREN | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
+CAPTION "Lua Script"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Browse",IDC_BUTTON_LUABROWSE,7,31,44,16
+    PUSHBUTTON      "Edit",IDC_BUTTON_LUAEDIT,60,31,44,16
+    PUSHBUTTON      "Run",IDC_BUTTON_LUARUN,113,31,44,16
+    PUSHBUTTON      "Stop",IDC_BUTTON_LUASTOP,166,31,44,16
+    PUSHBUTTON      "Hide",IDC_BUTTON_LUAHIDE,219,31,44,16
+    EDITTEXT        IDC_EDIT_LUAPATH,7,16,256,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_LUACONSOLE,7,61,256,81,ES_MULTILINE | ES_AUTOVSCROLL | ES_READONLY | WS_VSCROLL
+    LTEXT           "Output Console",IDC_STATIC,7,51,51,8
+    LTEXT           "Script File",IDC_STATIC,7,7,32,8
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -783,6 +910,46 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 113
     END
+
+    IDD_RAMSEARCH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_RAMWATCH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 170
+    END
+
+    IDD_EDITWATCH, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+    END
+
+    IDD_PROMPT, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+    END
+
+    IDD_MEM_VIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 438
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 270
+    END
+
+    IDD_LUA, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        TOPMARGIN, 7
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -812,6 +979,20 @@ BEGIN
     "]",            ID_SOUND_SYNC,          ASCII,  ALT, NOINVERT
     VK_RETURN,      ID_WINDOW_FULLSCREEN,   VIRTKEY, ALT, NOINVERT
     VK_BACK,        ID_WINDOW_STRETCH,      VIRTKEY, ALT, NOINVERT
+END
+
+IDR_RWACCELERATOR ACCELERATORS
+BEGIN
+    "N",            RAMMENU_FILE_NEW,       VIRTKEY, CONTROL
+    "O",            RAMMENU_FILE_OPEN,      VIRTKEY, CONTROL
+    "S",            RAMMENU_FILE_SAVE,      VIRTKEY, CONTROL
+    "S",            RAMMENU_FILE_SAVEAS,    VIRTKEY, SHIFT, CONTROL
+    "A",            IDC_C_WATCH_DUPLICATE,  VIRTKEY 
+    "E",            IDC_C_WATCH_EDIT,       VIRTKEY 
+    "D",            IDC_C_WATCH_DOWN,       VIRTKEY 
+    "U",            IDC_C_WATCH_UP,         VIRTKEY 
+    "N",            IDC_C_WATCH,            VIRTKEY 
+    "R",            IDC_C_WATCH_REMOVE,     VIRTKEY 
 END
 
 
@@ -931,174 +1112,213 @@ END
 // Menu
 //
 
-IDR_MENU_US MENUEX
+IDR_MENU_US MENU
 BEGIN
-    POPUP "&File",                          0,MFT_STRING,MFS_ENABLED
+    POPUP "&File"
     BEGIN
-        MENUITEM "L&oad Game...\tCtrl+O",       ID_FILE_LOAD_GAME,MFT_STRING,MFS_ENABLED
-        POPUP "Recent &Games",                  0,MFT_STRING,MFS_ENABLED
+        MENUITEM "L&oad Game...\tCtrl+O",       ID_FILE_LOAD_GAME
+        POPUP "Recent &Games"
         BEGIN
-            MENUITEM "Dummy",                       ID_RECENT_DUMMY,MFT_STRING,MFS_GRAYED
+            MENUITEM "Dummy",                       ID_RECENT_DUMMY, GRAYED
         END
-        MENUITEM "Load MultiCart...",           ID_FILE_LOADMULTICART,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        POPUP "&Save Game Position",            ID_FILE_SAVE_POPUP,MFT_STRING,MFS_ENABLED
+        MENUITEM "Load MultiCart...",           ID_FILE_LOADMULTICART
+        MENUITEM SEPARATOR
+        POPUP "&Save Game Position"
         BEGIN
-            MENUITEM MFT_SEPARATOR
-            MENUITEM "&Select File",                ID_FILE_SAVE_FILE,MFT_STRING,MFS_ENABLED
+            MENUITEM SEPARATOR
+            MENUITEM "&Select File",                ID_FILE_SAVE_FILE
         END
-        POPUP "&Load Game Position",            ID_FILE_LOAD_POPUP,MFT_STRING,MFS_ENABLED
+        POPUP "&Load Game Position"
         BEGIN
-            MENUITEM MFT_SEPARATOR
-            MENUITEM "Oops File",                   ID_FILE_LOAD_OOPS,MFT_STRING,MFS_ENABLED
-            MENUITEM MFT_SEPARATOR
-            MENUITEM "&Select File",                ID_FILE_LOAD_FILE,MFT_STRING,MFS_ENABLED
+            MENUITEM SEPARATOR
+            MENUITEM "Oops File",                   ID_FILE_LOAD_OOPS
+            MENUITEM SEPARATOR
+            MENUITEM "&Select File",                ID_FILE_LOAD_FILE
         END
-        MENUITEM "&Save with Preview",          ID_FILE_SAVE_PREVIEW,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Load with Preview",          ID_FILE_LOAD_PREVIEW,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        POPUP "Save Other",                     0,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Save with Preview",          ID_FILE_SAVE_PREVIEW
+        MENUITEM "&Load with Preview",          ID_FILE_LOAD_PREVIEW
+        MENUITEM SEPARATOR
+        POPUP "Save Other"
         BEGIN
-            MENUITEM "S&ave SPC Data",              ID_FILE_SAVE_SPC_DATA,MFT_STRING,MFS_ENABLED
-            MENUITEM "Save Screenshot",             ID_SAVESCREENSHOT,MFT_STRING,MFS_ENABLED
-            MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA,MFT_STRING,MFS_ENABLED
-            MENUITEM "Save Memory Pack",            ID_SAVEMEMPACK,MFT_STRING,MFS_ENABLED
+            MENUITEM "S&ave SPC Data",              ID_FILE_SAVE_SPC_DATA
+            MENUITEM "Save Screenshot",             ID_SAVESCREENSHOT
+            MENUITEM "Sa&ve S-RAM Data",            ID_FILE_SAVE_SRAM_DATA
+            MENUITEM "Save Memory Pack",            ID_SAVEMEMPACK
         END
-        MENUITEM "ROM Information...",          IDM_ROM_INFO,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY,MFT_STRING,MFS_ENABLED
-        MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD,MFT_STRING,MFS_ENABLED
-        MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Reset Game",                 ID_FILE_RESET,MFT_STRING,MFS_ENABLED
-        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT,MFT_STRING,MFS_ENABLED
+        MENUITEM "ROM Information...",          IDM_ROM_INFO
+        MENUITEM SEPARATOR
+        MENUITEM "Movie Play...",               ID_FILE_MOVIE_PLAY
+        MENUITEM "Movie Record...",             ID_FILE_MOVIE_RECORD
+        MENUITEM "Movie Stop",                  ID_FILE_MOVIE_STOP
+        MENUITEM SEPARATOR
+        MENUITEM "AVI Recording",               ID_FILE_AVI_RECORDING
+        MENUITEM SEPARATOR
+        POPUP "Lua Scripting"
+        BEGIN
+            MENUITEM "New Lua Script Window...",    IDC_NEW_LUA_SCRIPT, GRAYED
+            MENUITEM "Close All Script Windows",    IDC_CLOSE_LUA_SCRIPTS, GRAYED
+            MENUITEM "Show All Hidden Script Windows", IDC_UNHIDE_LUA_SCRIPTS, GRAYED
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Reset Game",                 ID_FILE_RESET
+        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
     END
-    POPUP "&Emulation",                     0,MFT_STRING,MFS_ENABLED
+    POPUP "&Emulation"
     BEGIN
-        MENUITEM "&Pause",                      ID_FILE_PAUSE,MFT_STRING,MFS_ENABLED
-        MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Frame Advance",              ID_FRAME_ADVANCE,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Hacks...",                   ID_EMULATION_HACKS,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Pause",                      ID_FILE_PAUSE
+        MENUITEM "Pause &When Inactive",        ID_EMULATION_PAUSEWHENINACTIVE
+        MENUITEM "&Frame Advance",              ID_FRAME_ADVANCE
+        MENUITEM SEPARATOR
+        MENUITEM "&Hacks...",                   ID_EMULATION_HACKS
+        MENUITEM "&Settings...\tAlt+F8",        ID_OPTIONS_SETTINGS
     END
-    POPUP "&Input",                         0,MFT_STRING,MFS_ENABLED
+    POPUP "&Input"
     BEGIN
-        MENUITEM "&Input Configuration...\tAlt+F7", 40022,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Customize Hotkeys...\tAlt+F9", ID_OPTIONS_KEYCUSTOM,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "Enable Background Input",     ID_EMULATION_BACKGROUNDINPUT,MFT_STRING,MFS_ENABLED
-        MENUITEM "Background Keyboard Hotkeys", ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "Detect gamepad changes",      ID_INPUT_DETECTGAMEPADCHANGES,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "Use SNES Joypad(s)",          IDM_SNES_JOYPAD,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use SNES Mouse",              IDM_MOUSE_TOGGLE,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use Super Scope",             IDM_SCOPE_TOGGLE,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use Super Multitap (5-player)", IDM_ENABLE_MULTITAP,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use Konami Justifier",        IDM_JUSTIFIER,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use Mouse in alternate port", IDM_MOUSE_SWAPPED,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use Multitaps (8-player)",    IDM_MULTITAP8,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use Dual Justifiers",         IDM_JUSTIFIERS,MFT_STRING,MFS_ENABLED
-        MENUITEM "Use M.A.C.S. Rifle",          IDM_MACSRIFLE_TOGGLE,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Input Configuration...\tAlt+F7", 40022
+        MENUITEM "&Customize Hotkeys...\tAlt+F9", ID_OPTIONS_KEYCUSTOM
+        MENUITEM SEPARATOR
+        MENUITEM "Enable Background Input",     ID_EMULATION_BACKGROUNDINPUT
+        MENUITEM "Background Keyboard Hotkeys", ID_INPUT_BACKGROUNDKEYBOARDHOTKEYS
+        MENUITEM SEPARATOR
+        MENUITEM "Detect gamepad changes",      ID_INPUT_DETECTGAMEPADCHANGES
+        MENUITEM SEPARATOR
+        MENUITEM "Use SNES Joypad(s)",          IDM_SNES_JOYPAD
+        MENUITEM "Use SNES Mouse",              IDM_MOUSE_TOGGLE
+        MENUITEM "Use Super Scope",             IDM_SCOPE_TOGGLE
+        MENUITEM "Use Super Multitap (5-player)", IDM_ENABLE_MULTITAP
+        MENUITEM "Use Konami Justifier",        IDM_JUSTIFIER
+        MENUITEM "Use Mouse in alternate port", IDM_MOUSE_SWAPPED
+        MENUITEM "Use Multitaps (8-player)",    IDM_MULTITAP8
+        MENUITEM "Use Dual Justifiers",         IDM_JUSTIFIERS
+        MENUITEM "Use M.A.C.S. Rifle",          IDM_MACSRIFLE_TOGGLE
     END
-    POPUP "&Sound",                         0,MFT_STRING,MFS_ENABLED
+    POPUP "&Sound"
     BEGIN
-        POPUP "&Playback Rate",                 0,MFT_STRING,MFS_ENABLED
+        POPUP "&Playback Rate"
         BEGIN
-            MENUITEM "&Mute Sound",                 ID_SOUND_NOSOUND,MFT_STRING,MFS_ENABLED
-            MENUITEM "8KHz",                        ID_SOUND_8000HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "11KHz",                       ID_SOUND_11025HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "16KHz",                       ID_SOUND_16000HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "22KHz",                       ID_SOUND_22050HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "30KHz",                       ID_SOUND_30000HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "32KHz",                       ID_SOUND_32000HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "35KHz",                       ID_SOUND_35000HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "44KHz",                       ID_SOUND_44100HZ,MFT_STRING,MFS_ENABLED
-            MENUITEM "48KHz",                       ID_SOUND_48000HZ,MFT_STRING,MFS_ENABLED
+            MENUITEM "&Mute Sound",                 ID_SOUND_NOSOUND
+            MENUITEM "8KHz",                        ID_SOUND_8000HZ
+            MENUITEM "11KHz",                       ID_SOUND_11025HZ
+            MENUITEM "16KHz",                       ID_SOUND_16000HZ
+            MENUITEM "22KHz",                       ID_SOUND_22050HZ
+            MENUITEM "30KHz",                       ID_SOUND_30000HZ
+            MENUITEM "32KHz",                       ID_SOUND_32000HZ
+            MENUITEM "35KHz",                       ID_SOUND_35000HZ
+            MENUITEM "44KHz",                       ID_SOUND_44100HZ
+            MENUITEM "48KHz",                       ID_SOUND_48000HZ
         END
-        POPUP "&Buffer Length",                 0,MFT_STRING,MFS_ENABLED
+        POPUP "&Buffer Length"
         BEGIN
-            MENUITEM "16ms",                        ID_SOUND_16MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "32ms",                        ID_SOUND_32MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "48ms",                        ID_SOUND_48MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "64ms",                        ID_SOUND_64MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "80ms",                        ID_SOUND_80MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "96ms",                        ID_SOUND_96MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "112ms",                       ID_SOUND_112MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "128ms",                       ID_SOUND_128MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "144ms",                       ID_SOUND_144MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "160ms",                       ID_SOUND_160MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "176ms",                       ID_SOUND_176MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "192ms",                       ID_SOUND_192MS,MFT_STRING,MFS_ENABLED
-            MENUITEM "208ms",                       ID_SOUND_208MS,MFT_STRING,MFS_ENABLED
+            MENUITEM "16ms",                        ID_SOUND_16MS
+            MENUITEM "32ms",                        ID_SOUND_32MS
+            MENUITEM "48ms",                        ID_SOUND_48MS
+            MENUITEM "64ms",                        ID_SOUND_64MS
+            MENUITEM "80ms",                        ID_SOUND_80MS
+            MENUITEM "96ms",                        ID_SOUND_96MS
+            MENUITEM "112ms",                       ID_SOUND_112MS
+            MENUITEM "128ms",                       ID_SOUND_128MS
+            MENUITEM "144ms",                       ID_SOUND_144MS
+            MENUITEM "160ms",                       ID_SOUND_160MS
+            MENUITEM "176ms",                       ID_SOUND_176MS
+            MENUITEM "192ms",                       ID_SOUND_192MS
+            MENUITEM "208ms",                       ID_SOUND_208MS
         END
-        POPUP "&Channels",                      0,MFT_STRING,MFS_ENABLED
+        POPUP "&Channels"
         BEGIN
-            MENUITEM "Channel &1",                  ID_CHANNELS_CHANNEL1,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &2",                  ID_CHANNELS_CHANNEL2,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &3",                  ID_CHANNELS_CHANNEL3,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &4",                  ID_CHANNELS_CHANNEL4,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &5",                  ID_CHANNELS_CHANNEL5,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &6",                  ID_CHANNELS_CHANNEL6,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &7",                  ID_CHANNELS_CHANNEL7,MFT_STRING,MFS_ENABLED
-            MENUITEM "Channel &8",                  ID_CHANNELS_CHANNEL8,MFT_STRING,MFS_ENABLED
-            MENUITEM MFT_SEPARATOR
-            MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL,MFT_STRING,MFS_ENABLED
+            MENUITEM "Channel &1",                  ID_CHANNELS_CHANNEL1
+            MENUITEM "Channel &2",                  ID_CHANNELS_CHANNEL2
+            MENUITEM "Channel &3",                  ID_CHANNELS_CHANNEL3
+            MENUITEM "Channel &4",                  ID_CHANNELS_CHANNEL4
+            MENUITEM "Channel &5",                  ID_CHANNELS_CHANNEL5
+            MENUITEM "Channel &6",                  ID_CHANNELS_CHANNEL6
+            MENUITEM "Channel &7",                  ID_CHANNELS_CHANNEL7
+            MENUITEM "Channel &8",                  ID_CHANNELS_CHANNEL8
+            MENUITEM SEPARATOR
+            MENUITEM "Enable All",                  ID_CHANNELS_ENABLEALL
         END
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS,MFT_STRING,MFS_ENABLED
+        MENUITEM SEPARATOR
+        MENUITEM "S&ync Sound\tAlt+]",          ID_SOUND_SYNC
+        MENUITEM "&Settings...\tAlt+T",         ID_SOUND_OPTIONS
     END
-    POPUP "&Video",                         0,MFT_STRING,MFS_ENABLED
+    POPUP "&Video"
     BEGIN
-        MENUITEM "&Hide Menubar\tEsc",          ID_WINDOW_HIDEMENUBAR,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN,MFT_STRING,MFS_ENABLED
-        POPUP "&Window Size",                   0,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Hide Menubar\tEsc",          ID_WINDOW_HIDEMENUBAR
+        MENUITEM "&Full Screen\tAlt+Enter",     ID_WINDOW_FULLSCREEN
+        POPUP "&Window Size"
         BEGIN
-            MENUITEM "&1x",                         ID_WINDOW_SIZE_1X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&2x",                         ID_WINDOW_SIZE_2X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&3x",                         ID_WINDOW_SIZE_3X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&4x",                         ID_WINDOW_SIZE_4X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&5x",                         ID_WINDOW_SIZE_5X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&6x",                         ID_WINDOW_SIZE_6X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&7x",                         ID_WINDOW_SIZE_7X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&8x",                         ID_WINDOW_SIZE_8X,MFT_STRING,MFS_ENABLED
-            MENUITEM "&9x",                         ID_WINDOW_SIZE_9X,MFT_STRING,MFS_ENABLED
-            MENUITEM "1&0x",                        ID_WINDOW_SIZE_10X,MFT_STRING,MFS_ENABLED
+            MENUITEM "&1x",                         ID_WINDOW_SIZE_1X
+            MENUITEM "&2x",                         ID_WINDOW_SIZE_2X
+            MENUITEM "&3x",                         ID_WINDOW_SIZE_3X
+            MENUITEM "&4x",                         ID_WINDOW_SIZE_4X
+            MENUITEM "&5x",                         ID_WINDOW_SIZE_5X
+            MENUITEM "&6x",                         ID_WINDOW_SIZE_6X
+            MENUITEM "&7x",                         ID_WINDOW_SIZE_7X
+            MENUITEM "&8x",                         ID_WINDOW_SIZE_8X
+            MENUITEM "&9x",                         ID_WINDOW_SIZE_9X
+            MENUITEM "1&0x",                        ID_WINDOW_SIZE_10X
         END
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Stretch Image\tAlt+Backspace", ID_WINDOW_STRETCH,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Maintain Aspect Ratio",      ID_WINDOW_ASPECTRATIO,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Bilinear Filtering",         ID_WINDOW_BILINEAR,MFT_STRING,MFS_ENABLED
-        MENUITEM "Show Frame &Rate",            ID_VIDEO_SHOWFRAMERATE,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY,MFT_STRING,MFS_ENABLED
+        MENUITEM SEPARATOR
+        MENUITEM "&Stretch Image\tAlt+Backspace", ID_WINDOW_STRETCH
+        MENUITEM "&Maintain Aspect Ratio",      ID_WINDOW_ASPECTRATIO
+        MENUITEM "&Bilinear Filtering",         ID_WINDOW_BILINEAR
+        MENUITEM "Show Frame &Rate",            ID_VIDEO_SHOWFRAMERATE
+        MENUITEM SEPARATOR
+        MENUITEM "&Display Configuration...\tAlt+F5", ID_OPTIONS_DISPLAY
     END
-    POPUP "&Cheat",                         0,MFT_STRING,MFS_ENABLED
+    POPUP "&Cheat"
     BEGIN
-        MENUITEM "&Game Genie, Pro-Action Replay Codes", ID_CHEAT_ENTER,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Search for New Cheats",      ID_CHEAT_SEARCH,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY,MFT_STRING,MFS_CHECKED
+        MENUITEM "&Game Genie, Pro-Action Replay Codes", ID_CHEAT_ENTER
+        MENUITEM "&Apply Cheats",               ID_CHEAT_APPLY, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "Search for New Cheats",       ID_CHEAT_SEARCH
+        MENUITEM "RAM Watch...",                ID_RAM_WATCH, GRAYED
+        MENUITEM "RAM &Search...",              ID_RAM_SEARCH, GRAYED
+        MENUITEM "View &Memory",                IDM_MEMORY
     END
-    POPUP "&Netplay",                       0,MFT_STRING,MFS_ENABLED
+    POPUP "&Netplay"
     BEGIN
-        MENUITEM "&Connect to Server...",       ID_NETPLAY_CONNECT,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Disconnect from Server",     ID_NETPLAY_DISCONNECT,MFT_STRING,MFS_ENABLED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Act as Server",              ID_NETPLAY_SERVER,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Re-sync all Clients Using Freeze File Now", ID_NETPLAY_SYNC,MFT_STRING,MFS_ENABLED
-        MENUITEM "&Send ROM Image to Clients Now", ID_NETPLAY_ROM,MFT_STRING,MFS_ENABLED
-        MENUITEM "S&end ROM Image to Clients",  ID_NETPLAY_SEND_ROM_ON_CONNECT,MFT_STRING,MFS_ENABLED
-        MENUITEM "S&ync Using Reset Game",      ID_NETPLAY_SYNC_BY_RESET,MFT_STRING,MFS_CHECKED
-        MENUITEM MFT_SEPARATOR
-        MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS,MFT_STRING,MFS_ENABLED
+        MENUITEM "&Connect to Server...",       ID_NETPLAY_CONNECT
+        MENUITEM "&Disconnect from Server",     ID_NETPLAY_DISCONNECT
+        MENUITEM SEPARATOR
+        MENUITEM "&Act as Server",              ID_NETPLAY_SERVER
+        MENUITEM "&Re-sync all Clients Using Freeze File Now", ID_NETPLAY_SYNC
+        MENUITEM "&Send ROM Image to Clients Now", ID_NETPLAY_ROM
+        MENUITEM "S&end ROM Image to Clients",  ID_NETPLAY_SEND_ROM_ON_CONNECT
+        MENUITEM "S&ync Using Reset Game",      ID_NETPLAY_SYNC_BY_RESET, CHECKED
+        MENUITEM SEPARATOR
+        MENUITEM "&Options...",                 ID_NETPLAY_OPTIONS
     END
-    POPUP "&Help",                          0,MFT_STRING,MFS_ENABLED
+    POPUP "&Help"
     BEGIN
-        MENUITEM "&About...",                   ID_HELP_ABOUT,MFT_STRING,MFS_ENABLED
+        MENUITEM "&About...",                   ID_HELP_ABOUT
+    END
+END
+
+RAMWATCH_MENU MENU
+BEGIN
+    POPUP "File"
+    BEGIN
+        MENUITEM "&New list\tCtrl N",           RAMMENU_FILE_NEW
+        MENUITEM "&Open...\tCtrl O",            RAMMENU_FILE_OPEN
+        MENUITEM "&Save\tCtrl S",               RAMMENU_FILE_SAVE
+        MENUITEM "Sa&ve As...\tCtrl Shift S",   RAMMENU_FILE_SAVEAS
+        MENUITEM "&Append file...",             RAMMENU_FILE_APPEND
+        MENUITEM "Recent",                      RAMMENU_FILE_RECENT
+        MENUITEM SEPARATOR
+        MENUITEM "Auto-&load",                  RAMMENU_FILE_AUTOLOAD
+        MENUITEM "Save Window Position",        RAMMENU_FILE_SAVEWINDOW
+        MENUITEM SEPARATOR
+        MENUITEM "&Close\tAlt F4",              IDCANCEL
+    END
+    POPUP "Watches"
+    BEGIN
+        MENUITEM "&New Watch\tN",               IDC_C_WATCH
+        MENUITEM "&Edit Watch\tE",              IDC_C_WATCH_EDIT
+        MENUITEM "&Remove Watch\tR",            IDC_C_WATCH_REMOVE
+        MENUITEM "Duplicate Watch\tA",          IDC_C_WATCH_DUPLICATE
+        MENUITEM SEPARATOR
+        MENUITEM "Move Up\tU",                  IDC_C_WATCH_UP
+        MENUITEM "Move Down\tD",                IDC_C_WATCH_DOWN
     END
 END
 
@@ -1199,6 +1419,36 @@ BEGIN
 END
 
 IDD_DIALOG_LOAD_PREVIEW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_RAMSEARCH AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_RAMWATCH AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_EDITWATCH AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_PROMPT AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_MEM_VIEW AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_LUA AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

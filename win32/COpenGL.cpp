@@ -18,6 +18,10 @@
 #include "snes9x_imgui.h"
 #include "imgui_impl_opengl3.h"
 
+#ifdef HAVE_LUA
+#include "../lua-engine.h"
+#endif
+
 COpenGL::COpenGL(void)
 {
 	hDC = NULL;
@@ -314,6 +318,10 @@ void COpenGL::Render(SSurface Src)
 	Dst.Pitch = outTextureWidth * 2;
 
 	RenderMethod (Src, Dst, &dstRect);
+
+#ifdef HAVE_LUA
+		DrawLuaGuiToScreen(Dst.Surface, dstRect.right-dstRect.left, dstRect.bottom-dstRect.top, 16, Dst.Pitch);
+#endif
 
 	if(pboFunctionsLoaded)
 		glUnmapBuffer(GL_PIXEL_UNPACK_BUFFER);

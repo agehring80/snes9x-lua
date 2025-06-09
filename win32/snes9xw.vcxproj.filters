@@ -84,7 +84,19 @@
     <ClInclude Include="AVIOutput.h">
       <Filter>GUI</Filter>
     </ClInclude>
+    <ClInclude Include="CWindow.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
     <ClInclude Include="InputCustom.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="memView.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ram_search.h">
+      <Filter>GUI</Filter>
+    </ClInclude>
+    <ClInclude Include="ramwatch.h">
       <Filter>GUI</Filter>
     </ClInclude>
     <ClInclude Include="render.h">
@@ -557,7 +569,22 @@
     <ClCompile Include="AVIOutput.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
+    <ClCompile Include="CWindow.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
     <ClCompile Include="InputCustom.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="luaconsole.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="memView.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ram_search.cpp">
+      <Filter>GUI</Filter>
+    </ClCompile>
+    <ClCompile Include="ramwatch.cpp">
       <Filter>GUI</Filter>
     </ClCompile>
     <ClCompile Include="render.cpp">
@@ -794,6 +821,9 @@
     <ClCompile Include="..\external\imgui\snes9x_imgui.cpp">
       <Filter>GUI\VideoDriver\ImGui</Filter>
     </ClCompile>
+    <ClCompile Include="..\lua-engine.cpp">
+      <Filter>Emu</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="rsrc\nodrop.cur">
@@ -1002,5 +1032,8 @@
       <Filter>Filter</Filter>
     </CustomBuild>
     <CustomBuild Include="snes9x.cfg" />
+    <CustomBuild Include="..\lua-engine.h">
+      <Filter>Emu</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>
