@@ -427,6 +427,8 @@ void S9xUsage (void)
 	S9xMessage(S9X_INFO, S9X_USAGE, "-hdmatiming <1-199>             (Not recommended) Changes HDMA transfer timings");
 	S9xMessage(S9X_INFO, S9X_USAGE, "                                event comes");
 	S9xMessage(S9X_INFO, S9X_USAGE, "-invalidvramaccess              (Not recommended) Allow invalid VRAM access");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-cpuoverclockmode               (Not recommended) 0=none, 1=min, 2=medium, 3=max");
+	S9xMessage(S9X_INFO, S9X_USAGE, "-maxspritetilesperline          (Not recommended) Default = 34, Unlimited ~= 128");
 	S9xMessage(S9X_INFO, S9X_USAGE, "");
 
 	// OTHER OPTIONS
@@ -715,6 +717,29 @@ char * S9xParseArgs (char **argv, int argc)
 			if (!strcasecmp(argv[i], "-invalidvramaccess"))
 				Settings.BlockInvalidVRAMAccessMaster = FALSE;
 			else
+			if (!strcasecmp(argv[i], "-cpuoverclockmode"))
+			{
+				if (i + 1 < argc)
+				{
+					int val = atoi(argv[++i]);
+					if (val >= 0 && val <= 3)
+						Settings.OverclockMode = val;
+				}
+				else
+					S9xUsage();
+			}
+			else
+			if (!strcasecmp(argv[i], "-maxspritetilesperline"))
+			{
+				if (i + 1 < argc)
+				{
+					int val = atoi(argv[++i]);
+					if (val >= 0 && val <= 128)
+						Settings.MaxSpriteTilesPerLine = val;
+				}
+				else
+					S9xUsage();
+			}
 
 			// OTHER OPTIONS
 
