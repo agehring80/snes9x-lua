@@ -3479,32 +3479,20 @@ int WINAPI WinMain(
 #ifdef HAVE_LUA
 	if (Settings.LoadLua)
 	{
-		if (LuaScriptHWnds.size() < 16)
+		if (LuaScriptHWnds.size() < 16 && rom_filename && _tcslen(rom_filename) > 0)
 		{
-			TCHAR fname[_MAX_FNAME];
-			TCHAR lua_filename[_MAX_PATH];
-			TCHAR full_lua_path[_MAX_PATH];
-			TCHAR exe_path[_MAX_PATH], exe_drive[_MAX_DRIVE], exe_dir[_MAX_DIR];
-			bool luafile_exists = false;
-			// Get base name from ROM
-			_tsplitpath(rom_filename, nullptr, nullptr, fname, nullptr);
-			_stprintf(lua_filename, _T("%s.lua"), fname);
-			// 1. Try executable directory
-			GetModuleFileName(nullptr, exe_path, _MAX_PATH);
-			_tsplitpath(exe_path, exe_drive, exe_dir, nullptr, nullptr);
-			_stprintf(full_lua_path, _T("%s%s%s"), exe_drive, exe_dir, lua_filename);
-			if (_taccess(full_lua_path, 0) == 0) {
-				luafile_exists = true;
-			}
-			else {
-				// 2. Try current directory
-				if (_tfullpath(full_lua_path, lua_filename, _MAX_PATH) && _taccess(full_lua_path, 0) == 0) {
-					luafile_exists = true;
-				}
-			}
-			if (luafile_exists) {
+			TCHAR lua_filename[MAX_PATH];
+			TCHAR rom_relativename[_MAX_FNAME];
+			TCHAR lua_relativename[_MAX_PATH];
+			_tsplitpath(rom_filename, nullptr, nullptr, rom_relativename, nullptr);
+			_stprintf(lua_relativename, _T("%s.lua"), rom_relativename);
+			SetCurrentDirectory(S9xGetDirectoryT(DEFAULT_DIR));
+			_tfullpath(lua_filename, lua_relativename, MAX_PATH);
+
+			if (_taccess(lua_filename, 0) == 0)
+			{
 				HWND hDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_LUA), GUI.hWnd, (DLGPROC)LuaScriptProc);
-				SendDlgItemMessage(hDlg, IDC_EDIT_LUAPATH, WM_SETTEXT, 0, (LPARAM)full_lua_path);
+				SendDlgItemMessage(hDlg, IDC_EDIT_LUAPATH, WM_SETTEXT, 0, (LPARAM)lua_filename);
 				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_LUARUN, 0);
 				SendMessage(hDlg, WM_COMMAND, IDC_BUTTON_LUAHIDE, 0);
 			}
